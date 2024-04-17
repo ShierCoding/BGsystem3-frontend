@@ -1,0 +1,48 @@
+html,
+body {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+
+  user-select: none;
+
+  font-family: Consolas, "黑体";
+}
+
+code {
+  font-family: Consolas, "黑体";
+}
+
+.dp__input {
+  background-color: #fff1 !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid #fff4 !important;
+  border-radius: .5em !important;
+}
+
+.dp__menu, .dp__overlay {
+  background: none !important;
+  backdrop-filter: blur(var(--backdrop-filter-blur));
+}
+
+.dp__overlay.dp--overlay-absolute {
+  backdrop-filter: blur(var(--backdrop-filter-blur));
+}
+
+.dp__menu {
+  border-radius: 10px !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: 0 0 1em #0004;
+}
+
+.dp__arrow_top {
+  display: none !important;
+}
+
+.dp__time_col {
+  transition: opacity .3s;
+}
+
+.dp__time_input:has(.dp__overlay_container) > .dp__time_col {
+  opacity: 0;
+}
