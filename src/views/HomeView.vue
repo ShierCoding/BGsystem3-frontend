@@ -1,41 +1,53 @@
 <template>
     <Transition name="fade" @after-enter="raw_opacity = 1" @before-leave="raw_opacity = 0">
         <div v-if="!optSchedule">
-            <CardContainer padding="2em 3em" :style="{
-        position: 'absolute',
-        left: '50%',
-        top: '50%',
-        transform: 'translate(-50%, -55%)',
-        boxShadow: `0 0 ${backgroundFilter}em #0004`,
-        opacity: backgroundFilter,
-    }" :blur="backgroundFilter * 20 + 'px'">
-                <TimeComponent />
-                <div style="margin: 1em;"></div>
-                <LaborComponent />
-            </CardContainer>
 
+            <template v-if="displayClock || displayLabor">
+                <CardContainer padding="2em 3em" :style="{
+                    position: 'absolute',
+                    left: '50%',
+                    top: '50%',
+                    transform: 'translate(-50%, -55%)',
+                    boxShadow: `0 0 ${backgroundFilter}em #0004`,
+                    opacity: backgroundFilter,
+                }" :blur="backgroundFilter * 30 + 'px'">
+                    <template v-if="displayClock">
+                        <TimeComponent />
+                    </template>
+                    <template v-if="displayLabor">
+                        <div style="margin: 1em;"></div>
+                        <LaborComponent />
+                    </template>
+                </CardContainer>
+            </template>
         </div>
     </Transition>
 
     <RandomSelect :random="random" @selected="random = false" />
 
-    <EditableSchedule :edit="optSchedule" />
+    <template v-if="displaySchedule">
+        <EditableSchedule :edit="optSchedule" />
+    </template>
 
-    <FooterTemplate :navigator="[
-        { name: '考试倒计时', callback: () => {
-            axios.get('/open/timer')
-            router.push('/timer');
-        } },
-        (optSchedule ? {
+    <FooterTemplate :navigator="([
+        (displayTimer ? {
+            name: '考试倒计时', callback: () => {
+                axios.get('/open/timer')
+                router.push('/timer');
+            }
+        } : undefined),
+        ...(optSchedule ? [{
             name: '重置课程表', callback: () => schedule.init()
-        } : {
+        }, {
+            name: '结束编辑',
+            callback: () => optSchedule = false
+        }] : [(displayRandom ? {
             name: '随机选人', callback: () => random = true
-        }),
-        {
-            name: optSchedule ? '结束编辑' : '编辑课程表',
-            callback: () => optSchedule = !optSchedule
-        }
-    ]" />
+        } : undefined), (displaySchedule ? {
+            name: '编辑课程表',
+            callback: () => optSchedule = true
+        } : undefined)]),
+    ] as NavigatorType).filter(x => !isUndefined(x))" />
 </template>
 
 <script setup lang="ts">
@@ -54,6 +66,15 @@ import { useSchedule } from "@/stores/schedule";
 import { useError } from "@/stores/error";
 
 import axios from "axios";
+import conf from "@/core/conf";
+import { isUndefined } from "lodash";
+
+const displayLabor = ref(false);
+const displaySchedule = ref(false);
+const displayClock = ref(false);
+const displayRandom = ref(false);
+const displayTimer = ref(false);
+const displayCountdown = ref(false);
 
 const schedule = useSchedule();
 
@@ -71,13 +92,28 @@ watch(random, () => {
 
 
 (async () => {
-    await schedule.init();
+    const config = await conf();
+    displayLabor.value = config.fn.use.indexOf("labor") !== -1;
+    displaySchedule.value = config.fn.use.indexOf("schedule") !== -1;
+    displayClock.value = config.fn.use.indexOf("clock") !== -1;
+    displayRandom.value = config.fn.use.indexOf("random") !== -1;
+    displayTimer.value = config.fn.use.indexOf("timer") !== -1;
+    displayCountdown.value = config.fn.use.indexOf("countdown") !== -1;
 
-    if (schedule.data == undefined) {
-        console.log("/error");
-        useError().error = "SCHEDULE_DATA_UNDEFINED";
+
+    if (displaySchedule.value) {
+        await schedule.init();
+        if (schedule.data == undefined) {
+            console.log("/error");
+            useError().setError("SCHEDULE_DATA_UNDEFINED");
+        }
     }
 })();
+
+type NavigatorType = {
+    name: string;
+    callback: () => void;
+}[];
 </script>
 
 <style scoped>

@@ -1,5 +1,13 @@
 {
     "fn": {
+        "use": [
+            "random",
+            "timer",
+            "clock",
+            "schedule",
+            "countdown",
+            "labor"
+        ],
         "clock": {
             "refreshRate": 5000,
             "format": "HH:mm"
@@ -399,15 +407,14 @@
             ]
         },
         "countdown": {
-            "show": true,
             "data": [
                 {
                     "name": "等级考",
-                    "time": 1714867200
+                    "time": 1809475200
                 },
                 {
                     "name": "高考",
-                    "time": 1717722000
+                    "time": 1812330000
                 }
             ]
         }

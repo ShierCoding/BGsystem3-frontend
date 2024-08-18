@@ -2,6 +2,8 @@ import axios, { type AxiosResponse } from "axios";
 import { MergeConfig, type Config, DefaultConfig } from "./type";
 import { useError } from "@/stores/error";
 import { nextTick } from "vue";
+import router from "@/router";
+import { sleep } from "../utils";
 
 const configFilesCache: { [key: string]: Config } = {};
 
@@ -28,6 +30,16 @@ export default async (configName: string = "config"): Promise<Config> => {
     try {
 
         data = (await request[configName]).data;
+        
+        console.log(typeof data);
+
+        if (typeof data != "object") {
+            const error = useError();
+            error.setError("CONFIG_FORMAT_ERRER");
+            // router.push("/error");
+            
+            return DefaultConfig();
+        }
 
         const mergedConfig = MergeConfig(data);
 
@@ -37,11 +49,11 @@ export default async (configName: string = "config"): Promise<Config> => {
 
         return mergedConfig;
 
-    } catch {
+    } catch (e){
 
         const error = useError();
 
-        error.error = "CONFIG_DATA_EMPTY";
+        error.setError("CONFIG_DATA_EMPTY");
 
         await nextTick();
 

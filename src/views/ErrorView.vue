@@ -1,6 +1,6 @@
 <template>
     <div>
-        <CardContainer padding="2em 2em" :style="{
+        <CardContainer padding="2em 2em" blur="1rem" :style="{
             position: 'absolute',
             left: '50%',
             top: '50%',

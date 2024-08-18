@@ -1,6 +1,6 @@
 <template>
-    <div class="container" :style="{ ...backgroundImgConfig }">
-        <video class="video" ref="videoDom" v-if="showVideo" muted autoplay loop />
+    <div class="container" :style="backgroundImgConfig">
+        <video class="video" ref="videoDom" v-if="showVideo" autoplay loop />
 
         <RouterView />
 
@@ -58,6 +58,10 @@ onMounted(async () => {
             //     console.log((videoDom.value as HTMLVideoElement).currentTime);
             //     (videoDom.value as HTMLVideoElement).currentTime = 0;
             // }, (videoDom.value as HTMLVideoElement).duration * 1000);
+
+            setInterval(() => {
+                videoDom.value?.play();
+            }, 1000);
         };
 
 

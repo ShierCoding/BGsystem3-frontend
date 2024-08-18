@@ -8,7 +8,7 @@
             opacity: realOpacity,
             minWidth: CountdownRefWidth + 'px',
         }">
-                <div style="margin: 0;"></div>
+                <div style="margin: .3em;"></div>
                 距离{{ countdown.name }}还有{{ ((countdown.time - currentTime.unix()) / (60 * 60 * 24)).toFixed(1) }}天
             </div>
         </template>
@@ -50,7 +50,7 @@ const CountdownRefWidth = ref(0);
     timeFormatter.value = config.fn.clock.format;
     dateFormatter.value = config.fn.clock.dateFormat;
 
-    showCountdown.value = config.fn.countdown.show;
+    showCountdown.value = (config.fn.use.indexOf("countdown") !== -1);
 
     setInterval(() => {
         currentTime.value = day();
@@ -61,6 +61,11 @@ const CountdownRefWidth = ref(0);
 
             const data = config.fn.countdown.data
                 .filter(x => x.time > currentTime.value.unix());
+
+            if (data.length == 0) {
+                showCountdown.value = false;
+                return;
+            }
 
             let countdownIndex = 0;
 

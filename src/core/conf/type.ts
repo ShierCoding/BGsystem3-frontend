@@ -17,6 +17,9 @@ export const DefaultConfig = () => ({
     /** 功能设置 */
     fn: {
 
+        /** 设置使用哪些功能 */
+        use: [] as ("random" | "schedule" | "clock" | "countdown" | "labor" | "timer")[],
+
         /** 随机选人设置 */
         random: {
 
@@ -154,13 +157,6 @@ export const DefaultConfig = () => ({
 
         /** 倒计时 */
         countdown: {
-            /**
-             * 是否显示倒计时
-             * 
-             * 默认值：false
-             */
-            show: false as boolean,
-
             /**
              * 倒计时项目
              * 
